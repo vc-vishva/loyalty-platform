@@ -7,6 +7,8 @@ export const errorMessages = {
   UNAUTHORIZED_REQUEST: 'Unauthorized request.',
   FORBIDDEN: 'Forbidden — you do not have permission to perform this action.',
   NOT_FOUND: 'Not found.',
+  SLUG_TAKEN: 'A business with this slug already exists',
+  BUSINESS_NOT_FOUND: 'Business not found',
 } as const;
 
 export const successMessages = {
@@ -18,6 +20,8 @@ export const successMessages = {
   SUCCESSFULLY_GET_LIST: 'List retrieved successfully.',
   SUCCESSFULLY_FETCHED: 'retrieved successfully.',
   SUCCESSFULLY_DELETED: 'deleted successfully.',
+  BUSINESS_CREATED: 'Business created successfully.',
+  BUSINESS_FETCHED: 'Business retrieved successfully.',
 } as const;
 
 export const validationMessages = {
@@ -30,6 +34,8 @@ export const validationMessages = {
   PASSWORD_MIN: 'password must be at least 8 characters',
   PASSWORD_LETTER: 'password must contain at least 1 letter',
   PASSWORD_NUMBER: 'password must contain at least 1 number',
+  INVALID_SLUG: 'slug must contain only lowercase letters, numbers and hyphens',
+  INVALID_REWARD_UNIT: 'rewardUnitValue must be a positive integer',
 } as const;
 
 export default {
