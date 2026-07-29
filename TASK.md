@@ -79,9 +79,12 @@ PR to `main`.
   Verified: my=2, summary {5,0,5}, admin sees 2, role guards 403.
   _commit: `feat: add rewards endpoints with per-customer summary`_
 
-- [ ] **F10 — README & docs**
-  Run instructions (API + worker), env vars, tenant-isolation explanation, deviations.
-  _commit: `docs: add README with setup, worker and tenant-isolation notes`_
+- [x] **F10 — README & docs** ✅ DONE
+  Full README: quick start (docker compose deps + single-command run of API+worker),
+  env table, API reference, tenant-isolation explanation, BullMQ job structure,
+  reward calc, caching strategy, folder structure + justified deviations.
+  Added `docker-compose.yml` (Postgres + Redis).
+  _commit: `docs: add README, env table and docker-compose for local run`_
 
 ## Bonus (optional, if time)
 - [ ] GitHub Actions running `tsc --noEmit` on push
