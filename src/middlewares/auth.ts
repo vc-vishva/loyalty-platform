@@ -1,31 +1,52 @@
-import passport from 'passport';
+import jwt from 'jsonwebtoken';
 import httpStatus from 'http-status';
-import { User } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { Request, Response, NextFunction, RequestHandler } from 'express';
+import config from '../config/config.js';
 import ApiError from '../utils/ApiError.js';
+import { errorMessages } from '../config/messages.js';
+import { tokenTypes } from '../config/tokens.js';
+import { TokenPayload } from '../services/token.service.js';
 
 /**
- * Authenticate the request via the JWT strategy, and optionally require that
- * `req.params.userId` matches the authenticated user's id.
+ * Authenticate a request from its Bearer JWT. The tenant (`businessId`) and
+ * `role` are taken straight from the verified token payload — never from the
+ * request body or params — and attached to `req.auth`. This is the single
+ * source of tenant scoping for every protected route.
  */
-const auth =
-  (requireUserIdMatch = false): RequestHandler =>
-  (req: Request, res: Response, next: NextFunction) => {
-    const verifyCallback = (err: Error | null, user: User | false, info: unknown): void => {
-      if (err || info || !user) {
-        return next(new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate'));
-      }
+export const authenticate: RequestHandler = (req: Request, _res: Response, next: NextFunction) => {
+  const header = req.headers.authorization;
+  if (!header || !header.startsWith('Bearer ')) {
+    return next(new ApiError(httpStatus.UNAUTHORIZED, errorMessages.INVALID_TOKEN));
+  }
 
-      req.user = user;
+  const token = header.slice('Bearer '.length);
+  try {
+    const payload = jwt.verify(token, config.jwt.secret) as TokenPayload;
+    if (payload.type !== tokenTypes.ACCESS) {
+      return next(new ApiError(httpStatus.UNAUTHORIZED, errorMessages.INVALID_TOKEN));
+    }
+    req.auth = { userId: payload.id, businessId: payload.businessId, role: payload.role };
+    return next();
+  } catch {
+    return next(new ApiError(httpStatus.UNAUTHORIZED, errorMessages.USER_UNAUTHORIZED));
+  }
+};
 
-      if (requireUserIdMatch && req.params.userId !== user.id) {
-        return next(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
-      }
-
-      return next();
-    };
-
-    passport.authenticate('jwt', { session: false }, verifyCallback)(req, res, next);
+/**
+ * Guard a route so only the given role(s) may access it. Must run after
+ * `authenticate`.
+ */
+export const requireRole =
+  (...roles: Role[]): RequestHandler =>
+  (req: Request, _res: Response, next: NextFunction) => {
+    if (!req.auth) {
+      return next(new ApiError(httpStatus.UNAUTHORIZED, errorMessages.UNAUTHORIZED_REQUEST));
+    }
+    if (!roles.includes(req.auth.role)) {
+      return next(new ApiError(httpStatus.FORBIDDEN, errorMessages.FORBIDDEN));
+    }
+    return next();
   };
 
-export default auth;
+export default authenticate;

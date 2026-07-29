@@ -1,23 +1,18 @@
-import { CustomHelpers, ErrorReport } from 'joi';
+import { z } from 'zod';
+import { validationMessages } from '../config/messages.js';
 
-export const objectId = (value: string, helpers: CustomHelpers): string | ErrorReport => {
-  if (!value.match(/^[0-9a-fA-F]{24}$/)) {
-    return helpers.message({ custom: '"{{#label}}" must be a valid mongo id' });
-  }
-  return value;
-};
+/**
+ * Reusable Zod field schemas shared across request validations.
+ */
+export const password = z
+  .string()
+  .min(8, validationMessages.PASSWORD_MIN)
+  .regex(/[a-zA-Z]/, validationMessages.PASSWORD_LETTER)
+  .regex(/\d/, validationMessages.PASSWORD_NUMBER);
 
-export const password = (value: string, helpers: CustomHelpers): string | ErrorReport => {
-  if (value.length < 8) {
-    return helpers.message({ custom: 'password must be at least 8 characters' });
-  }
-  if (!value.match(/\d/) || !value.match(/[a-zA-Z]/)) {
-    return helpers.message({ custom: 'password must contain at least 1 letter and 1 number' });
-  }
-  return value;
-};
+export const uuid = z.uuid(validationMessages.INVALID_UUID);
 
 export default {
-  objectId,
   password,
+  uuid,
 };
