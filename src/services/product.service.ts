@@ -10,7 +10,7 @@ import { CreateProductBody, UpdateProductBody } from '../types/product.type.js';
 const CACHE_TTL_SECONDS = 5 * 60;
 const listCacheKey = (businessId: string): string => `products:${businessId}`;
 
-const invalidateListCache = async (businessId: string): Promise<void> => {
+export const invalidateProductListCache = async (businessId: string): Promise<void> => {
   await redis.del(listCacheKey(businessId));
 };
 
@@ -51,7 +51,7 @@ export const createProduct = async (businessId: string, data: CreateProductBody)
   const product = await prisma.product.create({
     data: { ...data, business: { connect: { id: businessId } } },
   });
-  await invalidateListCache(businessId);
+  await invalidateProductListCache(businessId);
   return product;
 };
 
@@ -66,7 +66,7 @@ export const updateProduct = async (
 ): Promise<Product> => {
   await getProductById(businessId, id);
   const product = await prisma.product.update({ where: { id }, data });
-  await invalidateListCache(businessId);
+  await invalidateProductListCache(businessId);
   return product;
 };
 
@@ -76,7 +76,7 @@ export const updateProduct = async (
 export const deleteProduct = async (businessId: string, id: string): Promise<void> => {
   await getProductById(businessId, id);
   await prisma.product.delete({ where: { id } });
-  await invalidateListCache(businessId);
+  await invalidateProductListCache(businessId);
 };
 
 export default {

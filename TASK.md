@@ -55,10 +55,13 @@ PR to `main`.
   Verified: CRUD, cross-tenant 404 (GET+PUT), role 403, cache invalidation.
   _commit: `feat: add tenant-scoped products with Redis cache + invalidation`_
 
-- [ ] **F7 — Purchases module + reward queue**
-  `POST /purchases` (validate product same business, atomic stock decrement,
-  create purchase, **enqueue** BullMQ reward job, return immediately),
-  `GET /purchases/my`, `GET /purchases/:id` (own only). Queue: `reward-processing`.
+- [x] **F7 — Purchases module + reward queue** ✅ DONE
+  `POST /purchases` (customer-only): same-tenant product check, atomic stock
+  decrement (conditional UPDATE), create purchase, enqueue BullMQ job on
+  `reward-processing` (attempts:3, exp backoff, removeOnFail:false), returns
+  immediately. `GET /purchases/my`, `GET /purchases/:id` (own only → 404 else).
+  Verified: 201/amount, stock decrement, job enqueued, 404 cross-customer, 400
+  insufficient stock, 403 admin.
   _commit: `feat: add purchases with atomic stock decrement and queued reward job`_
 
 - [ ] **F8 — BullMQ reward worker**

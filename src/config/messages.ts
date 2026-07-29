@@ -10,6 +10,8 @@ export const errorMessages = {
   SLUG_TAKEN: 'A business with this slug already exists',
   BUSINESS_NOT_FOUND: 'Business not found',
   PRODUCT_NOT_FOUND: 'Product not found',
+  PURCHASE_NOT_FOUND: 'Purchase not found',
+  INSUFFICIENT_STOCK: 'Insufficient stock for this product',
 } as const;
 
 export const successMessages = {
@@ -28,6 +30,9 @@ export const successMessages = {
   PRODUCT_LIST_FETCHED: 'Products retrieved successfully.',
   PRODUCT_UPDATED: 'Product updated successfully.',
   PRODUCT_DELETED: 'Product deleted successfully.',
+  PURCHASE_CREATED: 'Purchase created successfully.',
+  PURCHASE_FETCHED: 'Purchase retrieved successfully.',
+  PURCHASE_LIST_FETCHED: 'Purchases retrieved successfully.',
 } as const;
 
 export const validationMessages = {
@@ -45,6 +50,7 @@ export const validationMessages = {
   INVALID_PRICE: 'price must be a positive integer',
   INVALID_STOCK: 'stock must be a non-negative integer',
   UPDATE_EMPTY: 'at least one field must be provided',
+  INVALID_QUANTITY: 'quantity must be a positive integer',
 } as const;
 
 export default {
