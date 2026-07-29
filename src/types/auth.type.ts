@@ -1,5 +1,12 @@
 import { Role } from '@prisma/client';
 
+/** The authenticated context derived from the JWT and attached to `req.auth`. */
+export interface AuthContext {
+  userId: string;
+  businessId: string;
+  role: Role;
+}
+
 /** Request-body types for the auth module. */
 
 export interface RegisterBody {

@@ -5,6 +5,7 @@ export const errorMessages = {
   INVALID_TOKEN: 'Invalid token. Please provide a valid authentication token.',
   USER_UNAUTHORIZED: 'Your session has expired. Please log in again.',
   UNAUTHORIZED_REQUEST: 'Unauthorized request.',
+  FORBIDDEN: 'Forbidden — you do not have permission to perform this action.',
   NOT_FOUND: 'Not found.',
 } as const;
 

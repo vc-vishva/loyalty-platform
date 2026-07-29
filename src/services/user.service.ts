@@ -4,7 +4,7 @@ import { Prisma, User } from '@prisma/client';
 import prisma from '../config/prisma.js';
 import ApiError from '../utils/ApiError.js';
 import { errorMessages } from '../config/messages.js';
-import { CreateUserBody } from '../types/user.type.js';
+import { CreateUserInput } from '../types/user.type.js';
 
 const SALT_ROUNDS = 8;
 
@@ -12,7 +12,7 @@ const SALT_ROUNDS = 8;
  * Create a user in a business (password is hashed before persisting).
  * Email is unique per business, so uniqueness is checked within the tenant.
  */
-export const createUser = async (userBody: CreateUserBody): Promise<User> => {
+export const createUser = async (userBody: CreateUserInput): Promise<User> => {
   if (await getUserByEmail(userBody.businessId, userBody.email)) {
     throw new ApiError(httpStatus.BAD_REQUEST, errorMessages.EMAIL_TAKEN);
   }
