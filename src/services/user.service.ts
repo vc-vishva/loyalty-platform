@@ -1,40 +1,37 @@
 import httpStatus from 'http-status';
 import bcrypt from 'bcryptjs';
-import { Prisma, Role, User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import prisma from '../config/prisma.js';
 import ApiError from '../utils/ApiError.js';
-
-export interface CreateUserBody {
-  name: string;
-  email: string;
-  password: string;
-  role?: Role;
-}
+import { errorMessages } from '../config/messages.js';
+import { CreateUserBody } from '../types/user.type.js';
 
 const SALT_ROUNDS = 8;
 
 /**
- * Create a user (password is hashed before persisting).
+ * Create a user in a business (password is hashed before persisting).
+ * Email is unique per business, so uniqueness is checked within the tenant.
  */
 export const createUser = async (userBody: CreateUserBody): Promise<User> => {
-  if (await getUserByEmail(userBody.email)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+  if (await getUserByEmail(userBody.businessId, userBody.email)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, errorMessages.EMAIL_TAKEN);
   }
   const hashedPassword = await bcrypt.hash(userBody.password, SALT_ROUNDS);
   const data: Prisma.UserCreateInput = {
     name: userBody.name,
     email: userBody.email,
     password: hashedPassword,
+    business: { connect: { id: userBody.businessId } },
     ...(userBody.role ? { role: userBody.role } : {}),
   };
   return prisma.user.create({ data });
 };
 
 /**
- * Get user by email.
+ * Get a user by email within a specific business (tenant-scoped).
  */
-export const getUserByEmail = async (email: string): Promise<User | null> => {
-  return prisma.user.findUnique({ where: { email } });
+export const getUserByEmail = async (businessId: string, email: string): Promise<User | null> => {
+  return prisma.user.findUnique({ where: { businessId_email: { businessId, email } } });
 };
 
 /**

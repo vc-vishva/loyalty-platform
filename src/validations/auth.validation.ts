@@ -1,24 +1,28 @@
 import { z } from 'zod';
-import { password } from './custom.validation.js';
+import { password, uuid } from './custom.validation.js';
+import { validationMessages } from '../config/messages.js';
 
 export const register = {
   body: z.object({
-    email: z.email(),
+    businessId: uuid,
+    name: z.string().min(1, `name ${validationMessages.REQUIRED}`),
+    email: z.email(validationMessages.INVALID_EMAIL),
     password,
-    name: z.string().min(1, 'name is required'),
+    role: z.enum(['admin', 'customer'], { error: validationMessages.INVALID_ROLE }),
   }),
 };
 
 export const login = {
   body: z.object({
-    email: z.string().min(1, 'email is required'),
-    password: z.string().min(1, 'password is required'),
+    businessId: uuid,
+    email: z.email(validationMessages.INVALID_EMAIL),
+    password: z.string().min(1, `password ${validationMessages.REQUIRED}`),
   }),
 };
 
 export const logout = {
   body: z.object({
-    refreshToken: z.string().min(1, 'refreshToken is required'),
+    refreshToken: z.string().min(1, `refreshToken ${validationMessages.REQUIRED}`),
   }),
 };
 

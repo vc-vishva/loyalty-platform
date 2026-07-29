@@ -1,6 +1,7 @@
 export const errorMessages = {
   UNEXPECTED_ERROR: 'Unexpected Error',
-  INCORRECT_DETAILS: 'Invalid email or password',
+  INCORRECT_DETAILS: 'Incorrect email or password',
+  EMAIL_TAKEN: 'Email already taken',
   INVALID_TOKEN: 'Invalid token. Please provide a valid authentication token.',
   USER_UNAUTHORIZED: 'Your session has expired. Please log in again.',
   UNAUTHORIZED_REQUEST: 'Unauthorized request.',
@@ -19,10 +20,15 @@ export const successMessages = {
 } as const;
 
 export const validationMessages = {
-  PASSWORD_IS_VALID:
-    'Password should contain minimum 8 characters, 1 small or capital letter, 1 number, and 1 special character.',
+  REQUIRED: 'is required',
   NOT_EMPTY: 'Should not be empty.',
   INVALID_STRING: 'Should be a string.',
+  INVALID_EMAIL: 'must be a valid email',
+  INVALID_UUID: 'must be a valid uuid',
+  INVALID_ROLE: 'role must be either admin or customer',
+  PASSWORD_MIN: 'password must be at least 8 characters',
+  PASSWORD_LETTER: 'password must contain at least 1 letter',
+  PASSWORD_NUMBER: 'password must contain at least 1 number',
 } as const;
 
 export default {

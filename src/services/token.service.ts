@@ -1,12 +1,14 @@
 import jwt from 'jsonwebtoken';
 import moment, { Moment } from 'moment';
-import { Token, User } from '@prisma/client';
+import { Role, Token, User } from '@prisma/client';
 import config from '../config/config.js';
 import prisma from '../config/prisma.js';
 import { tokenTypes, TokenType } from '../config/tokens.js';
 
 export interface TokenPayload {
   id: string;
+  businessId: string;
+  role: Role;
   iat: number;
   exp: number;
   type: TokenType;
@@ -27,12 +29,16 @@ export interface AuthTokens {
  */
 export const generateToken = (
   userId: string,
+  businessId: string,
+  role: Role,
   expires: Moment,
   type: TokenType,
   secret: string = config.jwt.secret
 ): string => {
   const payload = {
     id: userId,
+    businessId,
+    role,
     iat: moment().unix(),
     exp: expires.unix(),
     type,
@@ -80,10 +86,10 @@ export const verifyToken = async (token: string, type: TokenType): Promise<Token
  */
 export const generateAuthTokens = async (user: User): Promise<AuthTokens> => {
   const accessTokenExpires = moment().add(config.jwt.accessExpirationMinutes, 'minutes');
-  const accessToken = generateToken(user.id, accessTokenExpires, tokenTypes.ACCESS);
+  const accessToken = generateToken(user.id, user.businessId, user.role, accessTokenExpires, tokenTypes.ACCESS);
 
   const refreshTokenExpires = moment().add(config.jwt.refreshExpirationDays, 'days');
-  const refreshToken = generateToken(user.id, refreshTokenExpires, tokenTypes.REFRESH);
+  const refreshToken = generateToken(user.id, user.businessId, user.role, refreshTokenExpires, tokenTypes.REFRESH);
   await saveToken(refreshToken, user.id, refreshTokenExpires, tokenTypes.REFRESH);
 
   return {
