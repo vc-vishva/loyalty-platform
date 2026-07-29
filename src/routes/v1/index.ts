@@ -4,6 +4,7 @@ import userRoute from './user.route.js';
 import businessRoute from './business.route.js';
 import productRoute from './product.route.js';
 import purchaseRoute from './purchase.route.js';
+import rewardRoute from './reward.route.js';
 
 const router: Router = express.Router();
 
@@ -32,6 +33,10 @@ const defaultRoutes: RouteConfig[] = [
   {
     path: '/purchases',
     route: purchaseRoute,
+  },
+  {
+    path: '/rewards',
+    route: rewardRoute,
   },
 ];
 

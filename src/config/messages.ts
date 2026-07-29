@@ -33,6 +33,8 @@ export const successMessages = {
   PURCHASE_CREATED: 'Purchase created successfully.',
   PURCHASE_FETCHED: 'Purchase retrieved successfully.',
   PURCHASE_LIST_FETCHED: 'Purchases retrieved successfully.',
+  REWARD_LIST_FETCHED: 'Rewards retrieved successfully.',
+  REWARD_SUMMARY_FETCHED: 'Reward summary retrieved successfully.',
 } as const;
 
 export const validationMessages = {

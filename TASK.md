@@ -72,9 +72,11 @@ PR to `main`.
   Verified: purchase → worker computed points=2, status=completed (DB confirmed).
   _commit: `feat: add BullMQ reward worker with retry and dead-letter handling`_
 
-- [ ] **F9 — Rewards module**
-  `GET /rewards/my`, `GET /rewards/summary` (earned/pending/net),
-  `GET /rewards/customer/:id` (admin, same-business only).
+- [x] **F9 — Rewards module** ✅ DONE
+  `GET /rewards/my` (customer, with source purchase), `GET /rewards/summary`
+  (earned = completed points, pending = pending points, net = earned),
+  `GET /rewards/customer/:id` (admin, tenant-scoped so no cross-business access).
+  Verified: my=2, summary {5,0,5}, admin sees 2, role guards 403.
   _commit: `feat: add rewards endpoints with per-customer summary`_
 
 - [ ] **F10 — README & docs**
