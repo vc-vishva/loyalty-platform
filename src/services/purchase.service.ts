@@ -37,7 +37,7 @@ export const createPurchase = async (
       throw new ApiError(httpStatus.BAD_REQUEST, errorMessages.INSUFFICIENT_STOCK);
     }
 
-    return tx.purchase.create({
+    const created = await tx.purchase.create({
       data: {
         amount: product.price * quantity,
         customer: { connect: { id: customerId } },
@@ -45,6 +45,14 @@ export const createPurchase = async (
         product: { connect: { id: productId } },
       },
     });
+
+    // Create the reward in `pending` state; the worker computes the points and
+    // flips it to `completed` (or `failed`). Points are NOT calculated here.
+    await tx.reward.create({
+      data: { customerId, businessId, purchaseId: created.id, points: 0, status: 'pending' },
+    });
+
+    return created;
   });
 
   // Stock changed → drop the cached product list for this tenant.

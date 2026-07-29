@@ -51,7 +51,6 @@ cp .env.example .env
 #    REDIS_URL=redis://localhost:6379
 #    JWT_SECRET=supersecret
 #    JWT_ACCESS_EXPIRATION_MINUTES=30
-#    JWT_REFRESH_EXPIRATION_DAYS=30
 
 # 4. Generate the Prisma client and run migrations
 npm run prisma:generate
@@ -79,7 +78,6 @@ For production: `npm run build` then `npm start` (also runs API + worker).
 | `REDIS_URL`                     | Redis connection string (cache + BullMQ)     |
 | `JWT_SECRET`                    | Secret used to sign JWTs                      |
 | `JWT_ACCESS_EXPIRATION_MINUTES` | Access token lifetime (minutes)              |
-| `JWT_REFRESH_EXPIRATION_DAYS`   | Refresh token lifetime (days)                |
 
 `.env.example` is committed with empty values. Env vars are validated with Zod at
 startup (`src/config/config.ts`) — the app refuses to boot if any are missing.
@@ -112,7 +110,6 @@ Base path: `/v1`. All responses share one envelope:
 | ------ | ---------------- | ------ | ----- |
 | POST   | `/auth/register` | Public | `businessId, name, email, password, role(admin\|customer)` → returns JWT (with `businessId`) |
 | POST   | `/auth/login`    | Public | `businessId, email, password` → returns JWT |
-| POST   | `/auth/logout`   | Public | `refreshToken` |
 
 ### Businesses
 | Method | Endpoint          | Access | Notes |

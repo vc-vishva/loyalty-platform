@@ -22,7 +22,3 @@ export interface LoginBody {
   email: string;
   password: string;
 }
-
-export interface LogoutBody {
-  refreshToken: string;
-}
