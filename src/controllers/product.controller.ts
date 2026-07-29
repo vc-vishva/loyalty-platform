@@ -1,14 +1,22 @@
 import httpStatus from 'http-status';
 import catchAsync from '../utils/catchAsync.js';
+import ApiError from '../utils/ApiError.js';
 import { getAuth } from '../utils/auth.util.js';
 import { productService } from '../services/index.js';
+import { listProductsQuery } from '../validations/product.validation.js';
 import { sendResponse } from '../utils/response.util.js';
 import { successMessages } from '../config/messages.js';
 import { CreateProductBody, UpdateProductBody, ProductIdParams } from '../types/product.type.js';
 
 export const listProducts = catchAsync(async (req, res) => {
   const { businessId } = getAuth(req);
-  const products = await productService.listProducts(businessId);
+  // req.query is read-only in Express 5, so parse it here (applies coercion + defaults).
+  const parsed = listProductsQuery.safeParse(req.query);
+  if (!parsed.success) {
+    const message = parsed.error.issues.map((i) => `${i.path.join('.') || 'query'}: ${i.message}`).join(', ');
+    throw new ApiError(httpStatus.BAD_REQUEST, message);
+  }
+  const products = await productService.listProducts(businessId, parsed.data);
   sendResponse(res, httpStatus.OK, successMessages.PRODUCT_LIST_FETCHED, products);
 });
 

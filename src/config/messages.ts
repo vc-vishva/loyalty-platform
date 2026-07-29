@@ -53,6 +53,9 @@ export const validationMessages = {
   INVALID_STOCK: 'stock must be a non-negative integer',
   UPDATE_EMPTY: 'at least one field must be provided',
   INVALID_QUANTITY: 'quantity must be a positive integer',
+  INVALID_PAGE: 'page must be a positive integer',
+  INVALID_LIMIT: 'limit must be between 1 and 100',
+  INVALID_PRICE_FILTER: 'price filters must be non-negative integers',
 } as const;
 
 export default {
