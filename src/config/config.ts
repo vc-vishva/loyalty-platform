@@ -15,7 +15,6 @@ const envVarsSchema = z.object({
   REDIS_URL: z.string().min(1, `REDIS_URL ${validationMessages.REQUIRED}`),
   JWT_SECRET: z.string().min(1, `JWT_SECRET ${validationMessages.REQUIRED}`),
   JWT_ACCESS_EXPIRATION_MINUTES: z.coerce.number().int().positive().default(30),
-  JWT_REFRESH_EXPIRATION_DAYS: z.coerce.number().int().positive().default(30),
 });
 
 const parsed = envVarsSchema.safeParse(process.env);
@@ -39,7 +38,6 @@ interface Config {
   jwt: {
     secret: string;
     accessExpirationMinutes: number;
-    refreshExpirationDays: number;
   };
 }
 
@@ -55,7 +53,6 @@ const config: Config = {
   jwt: {
     secret: envVars.JWT_SECRET,
     accessExpirationMinutes: envVars.JWT_ACCESS_EXPIRATION_MINUTES,
-    refreshExpirationDays: envVars.JWT_REFRESH_EXPIRATION_DAYS,
   },
 };
 

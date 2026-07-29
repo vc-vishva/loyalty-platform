@@ -1,12 +1,9 @@
-import { TokenType } from '@prisma/client';
-
 /**
- * Re-export Prisma's generated TokenType enum, plus an uppercase-keyed alias so
- * existing call sites (tokenTypes.ACCESS / tokenTypes.REFRESH) keep working.
+ * Token type embedded in the JWT payload. Kept as a local constant — the app
+ * issues stateless access JWTs, so there is no Token table.
  */
-export { TokenType };
-
 export const tokenTypes = {
-  ACCESS: TokenType.access,
-  REFRESH: TokenType.refresh,
+  ACCESS: 'access',
 } as const;
+
+export type TokenType = (typeof tokenTypes)[keyof typeof tokenTypes];

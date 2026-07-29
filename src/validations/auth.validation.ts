@@ -20,14 +20,7 @@ export const login = {
   }),
 };
 
-export const logout = {
-  body: z.object({
-    refreshToken: z.string().min(1, `refreshToken ${validationMessages.REQUIRED}`),
-  }),
-};
-
 export default {
   register,
   login,
-  logout,
 };
