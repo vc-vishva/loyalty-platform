@@ -35,13 +35,6 @@ export const getUserByEmail = async (businessId: string, email: string): Promise
 };
 
 /**
- * Get user by id.
- */
-export const getUserById = async (id: string): Promise<User | null> => {
-  return prisma.user.findUnique({ where: { id } });
-};
-
-/**
  * Check whether a plaintext password matches the user's stored hash.
  */
 export const isPasswordMatch = async (password: string, user: User): Promise<boolean> => {
@@ -51,6 +44,5 @@ export const isPasswordMatch = async (password: string, user: User): Promise<boo
 export default {
   createUser,
   getUserByEmail,
-  getUserById,
   isPasswordMatch,
 };

@@ -19,11 +19,6 @@ enum Role {
   customer
 }
 
-enum TokenType {
-  access
-  refresh
-}
-
 enum RewardStatus {
   pending
   completed
@@ -55,7 +50,6 @@ model User {
   isEmailVerified Boolean    @default(false)
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
-  tokens          Token[]
   purchases       Purchase[]
   rewards         Reward[]
 
@@ -64,21 +58,6 @@ model User {
   @@unique([businessId, email])
   @@index([businessId])
   @@map("users")
-}
-
-model Token {
-  id          String    @id @default(uuid())
-  token       String
-  type        TokenType
-  expires     DateTime
-  blacklisted Boolean   @default(false)
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  @@index([token])
-  @@map("tokens")
 }
 
 model Product {

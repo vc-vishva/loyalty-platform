@@ -2,11 +2,9 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import compression from 'compression';
 import cors from 'cors';
-import passport from 'passport';
 import httpStatus from 'http-status';
 import config from './config/config.js';
 import morgan from './config/morgan.js';
-import { jwtStrategy } from './config/passport.js';
 import routes from './routes/v1/index.js';
 import { errorConverter, errorHandler } from './middlewares/error.js';
 import ApiError from './utils/ApiError.js';
@@ -32,10 +30,6 @@ app.use(compression());
 
 // enable cors (also handles preflight OPTIONS requests)
 app.use(cors());
-
-// jwt authentication
-app.use(passport.initialize());
-passport.use('jwt', jwtStrategy);
 
 // v1 api routes
 app.use('/v1', routes);
