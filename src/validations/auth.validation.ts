@@ -1,24 +1,24 @@
-import Joi from 'joi';
+import { z } from 'zod';
 import { password } from './custom.validation.js';
 
 export const register = {
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().custom(password),
-    name: Joi.string().required(),
+  body: z.object({
+    email: z.email(),
+    password,
+    name: z.string().min(1, 'name is required'),
   }),
 };
 
 export const login = {
-  body: Joi.object().keys({
-    email: Joi.string().required(),
-    password: Joi.string().required(),
+  body: z.object({
+    email: z.string().min(1, 'email is required'),
+    password: z.string().min(1, 'password is required'),
   }),
 };
 
 export const logout = {
-  body: Joi.object().keys({
-    refreshToken: Joi.string().required(),
+  body: z.object({
+    refreshToken: z.string().min(1, 'refreshToken is required'),
   }),
 };
 
