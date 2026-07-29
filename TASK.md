@@ -64,10 +64,12 @@ PR to `main`.
   insufficient stock, 403 admin.
   _commit: `feat: add purchases with atomic stock decrement and queued reward job`_
 
-- [ ] **F8 — BullMQ reward worker**
-  Worker on `reward-processing`: `points = floor(amount / reward_unit_value)`,
-  create Reward COMPLETED; on failure mark FAILED + retry ×3 → dead-letter; log each job.
-  Runs alongside the server.
+- [x] **F8 — BullMQ reward worker** ✅ DONE
+  Worker on `reward-processing`: `points = floor(amount / rewardUnitValue)`,
+  upserts Reward `completed`; on failure marks `failed` + rethrows (retry ×3,
+  then dead-letter via removeOnFail:false); logs job id/customer/business/points/status.
+  Runs as its own process; `npm run dev`/`start` run API + worker together (concurrently).
+  Verified: purchase → worker computed points=2, status=completed (DB confirmed).
   _commit: `feat: add BullMQ reward worker with retry and dead-letter handling`_
 
 - [ ] **F9 — Rewards module**
