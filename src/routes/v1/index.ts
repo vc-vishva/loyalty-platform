@@ -2,6 +2,7 @@ import express, { Router } from 'express';
 import authRoute from './auth.route.js';
 import userRoute from './user.route.js';
 import businessRoute from './business.route.js';
+import productRoute from './product.route.js';
 
 const router: Router = express.Router();
 
@@ -22,6 +23,10 @@ const defaultRoutes: RouteConfig[] = [
   {
     path: '/businesses',
     route: businessRoute,
+  },
+  {
+    path: '/products',
+    route: productRoute,
   },
 ];
 

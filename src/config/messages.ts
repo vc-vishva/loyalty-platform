@@ -9,6 +9,7 @@ export const errorMessages = {
   NOT_FOUND: 'Not found.',
   SLUG_TAKEN: 'A business with this slug already exists',
   BUSINESS_NOT_FOUND: 'Business not found',
+  PRODUCT_NOT_FOUND: 'Product not found',
 } as const;
 
 export const successMessages = {
@@ -22,6 +23,11 @@ export const successMessages = {
   SUCCESSFULLY_DELETED: 'deleted successfully.',
   BUSINESS_CREATED: 'Business created successfully.',
   BUSINESS_FETCHED: 'Business retrieved successfully.',
+  PRODUCT_CREATED: 'Product created successfully.',
+  PRODUCT_FETCHED: 'Product retrieved successfully.',
+  PRODUCT_LIST_FETCHED: 'Products retrieved successfully.',
+  PRODUCT_UPDATED: 'Product updated successfully.',
+  PRODUCT_DELETED: 'Product deleted successfully.',
 } as const;
 
 export const validationMessages = {
@@ -36,6 +42,9 @@ export const validationMessages = {
   PASSWORD_NUMBER: 'password must contain at least 1 number',
   INVALID_SLUG: 'slug must contain only lowercase letters, numbers and hyphens',
   INVALID_REWARD_UNIT: 'rewardUnitValue must be a positive integer',
+  INVALID_PRICE: 'price must be a positive integer',
+  INVALID_STOCK: 'stock must be a non-negative integer',
+  UPDATE_EMPTY: 'at least one field must be provided',
 } as const;
 
 export default {

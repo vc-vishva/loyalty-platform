@@ -48,10 +48,11 @@ PR to `main`.
   (survives DB row deletion). Redis runs via Docker (`redis:7` on 6379).
   _commit: `feat: add business module with Redis-cached lookup`_
 
-- [ ] **F6 — Products module**
-  `GET /products` (tenant-scoped, Redis 5 min TTL, key includes businessId),
-  `GET /products/:id` (404 if other tenant), `POST/PUT/DELETE` (admin only,
-  cache invalidation on write).
+- [x] **F6 — Products module** ✅ DONE
+  Full CRUD, all tenant-scoped by JWT businessId. `GET /products` cached per
+  business (`products:<businessId>`, 5 min TTL) with invalidation on create/update/delete.
+  `GET /products/:id` returns 404 across tenants (never 403). Admin-only writes.
+  Verified: CRUD, cross-tenant 404 (GET+PUT), role 403, cache invalidation.
   _commit: `feat: add tenant-scoped products with Redis cache + invalidation`_
 
 - [ ] **F7 — Purchases module + reward queue**
