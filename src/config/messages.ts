@@ -1,10 +1,17 @@
 export const errorMessages = {
   UNEXPECTED_ERROR: 'Unexpected Error',
-  INCORRECT_DETAILS: 'Invalid email or password',
+  INCORRECT_DETAILS: 'Incorrect email or password',
+  EMAIL_TAKEN: 'Email already taken',
   INVALID_TOKEN: 'Invalid token. Please provide a valid authentication token.',
   USER_UNAUTHORIZED: 'Your session has expired. Please log in again.',
   UNAUTHORIZED_REQUEST: 'Unauthorized request.',
+  FORBIDDEN: 'Forbidden — you do not have permission to perform this action.',
   NOT_FOUND: 'Not found.',
+  SLUG_TAKEN: 'A business with this slug already exists',
+  BUSINESS_NOT_FOUND: 'Business not found',
+  PRODUCT_NOT_FOUND: 'Product not found',
+  PURCHASE_NOT_FOUND: 'Purchase not found',
+  INSUFFICIENT_STOCK: 'Insufficient stock for this product',
 } as const;
 
 export const successMessages = {
@@ -16,13 +23,36 @@ export const successMessages = {
   SUCCESSFULLY_GET_LIST: 'List retrieved successfully.',
   SUCCESSFULLY_FETCHED: 'retrieved successfully.',
   SUCCESSFULLY_DELETED: 'deleted successfully.',
+  BUSINESS_CREATED: 'Business created successfully.',
+  BUSINESS_FETCHED: 'Business retrieved successfully.',
+  PRODUCT_CREATED: 'Product created successfully.',
+  PRODUCT_FETCHED: 'Product retrieved successfully.',
+  PRODUCT_LIST_FETCHED: 'Products retrieved successfully.',
+  PRODUCT_UPDATED: 'Product updated successfully.',
+  PRODUCT_DELETED: 'Product deleted successfully.',
+  PURCHASE_CREATED: 'Purchase created successfully.',
+  PURCHASE_FETCHED: 'Purchase retrieved successfully.',
+  PURCHASE_LIST_FETCHED: 'Purchases retrieved successfully.',
+  REWARD_LIST_FETCHED: 'Rewards retrieved successfully.',
+  REWARD_SUMMARY_FETCHED: 'Reward summary retrieved successfully.',
 } as const;
 
 export const validationMessages = {
-  PASSWORD_IS_VALID:
-    'Password should contain minimum 8 characters, 1 small or capital letter, 1 number, and 1 special character.',
+  REQUIRED: 'is required',
   NOT_EMPTY: 'Should not be empty.',
   INVALID_STRING: 'Should be a string.',
+  INVALID_EMAIL: 'must be a valid email',
+  INVALID_UUID: 'must be a valid uuid',
+  INVALID_ROLE: 'role must be either admin or customer',
+  PASSWORD_MIN: 'password must be at least 8 characters',
+  PASSWORD_LETTER: 'password must contain at least 1 letter',
+  PASSWORD_NUMBER: 'password must contain at least 1 number',
+  INVALID_SLUG: 'slug must contain only lowercase letters, numbers and hyphens',
+  INVALID_REWARD_UNIT: 'rewardUnitValue must be a positive integer',
+  INVALID_PRICE: 'price must be a positive integer',
+  INVALID_STOCK: 'stock must be a non-negative integer',
+  UPDATE_EMPTY: 'at least one field must be provided',
+  INVALID_QUANTITY: 'quantity must be a positive integer',
 } as const;
 
 export default {

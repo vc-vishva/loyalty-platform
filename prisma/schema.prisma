@@ -1,5 +1,10 @@
 // Prisma schema for the loyalty-platform API (PostgreSQL).
 // Docs: https://pris.ly/d/prisma-schema
+//
+// Multi-tenancy: every tenant-owned table carries `businessId`. All queries are
+// scoped to the businessId taken from the authenticated user's JWT.
+// Money (price, amount, rewardUnitValue) is stored as integer rupees so the
+// reward calculation floor(amount / rewardUnitValue) stays exact.
 
 generator client {
   provider = "prisma-client-js"
@@ -10,8 +15,8 @@ datasource db {
 }
 
 enum Role {
-  user
   admin
+  customer
 }
 
 enum TokenType {
@@ -19,17 +24,45 @@ enum TokenType {
   refresh
 }
 
-model User {
-  id              String   @id @default(uuid())
-  name            String
-  email           String   @unique
-  password        String
-  role            Role     @default(user)
-  isEmailVerified Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  tokens          Token[]
+enum RewardStatus {
+  pending
+  completed
+  failed
+}
 
+model Business {
+  id              String     @id @default(uuid())
+  name            String
+  slug            String     @unique
+  rewardUnitValue Int
+  createdAt       DateTime   @default(now())
+  users           User[]
+  products        Product[]
+  purchases       Purchase[]
+  rewards         Reward[]
+
+  @@map("businesses")
+}
+
+model User {
+  id              String     @id @default(uuid())
+  businessId      String
+  business        Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  name            String
+  email           String
+  password        String
+  role            Role       @default(customer)
+  isEmailVerified Boolean    @default(false)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  tokens          Token[]
+  purchases       Purchase[]
+  rewards         Reward[]
+
+  // Email is unique per business (not globally) so the same address can exist
+  // across tenants. Login therefore requires businessId + email.
+  @@unique([businessId, email])
+  @@index([businessId])
   @@map("users")
 }
 
@@ -46,4 +79,54 @@ model Token {
 
   @@index([token])
   @@map("tokens")
+}
+
+model Product {
+  id          String     @id @default(uuid())
+  businessId  String
+  business    Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  name        String
+  description String
+  price       Int
+  stock       Int
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  purchases   Purchase[]
+
+  @@index([businessId])
+  @@map("products")
+}
+
+model Purchase {
+  id         String   @id @default(uuid())
+  customerId String
+  customer   User     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id])
+  amount     Int
+  createdAt  DateTime @default(now())
+  reward     Reward?
+
+  @@index([businessId])
+  @@index([customerId])
+  @@map("purchases")
+}
+
+model Reward {
+  id         String       @id @default(uuid())
+  customerId String
+  customer   User         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  businessId String
+  business   Business     @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  purchaseId String       @unique
+  purchase   Purchase     @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  points     Int
+  status     RewardStatus @default(pending)
+  createdAt  DateTime     @default(now())
+
+  @@index([businessId])
+  @@index([customerId])
+  @@map("rewards")
 }
