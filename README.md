@@ -79,7 +79,6 @@ for the full design.
 ## Docs
 
 - Backend API reference & design notes: [`backend/README.md`](./backend/README.md)
-- Build plan / checklist: [`TASK.md`](./TASK.md)
 
 ## License
 
