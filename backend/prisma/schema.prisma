@@ -1,10 +1,10 @@
-// Prisma schema for the loyalty-platform API (PostgreSQL).
+// Prisma schema for the Co-working Space Desk & Room Booking System (PostgreSQL).
 // Docs: https://pris.ly/d/prisma-schema
 //
-// Multi-tenancy: every tenant-owned table carries `businessId`. All queries are
-// scoped to the businessId taken from the authenticated user's JWT.
-// Money (price, amount, rewardUnitValue) is stored as integer rupees so the
-// reward calculation floor(amount / rewardUnitValue) stays exact.
+// Concurrency: overlapping *approved* bookings for the same space are prevented at
+// the database level by a PostgreSQL GiST exclusion constraint (added in a raw SQL
+// migration — see prisma/migrations/*_booking_no_overlap). This guarantees that,
+// even under simultaneous approvals, a slot can have at most one approved booking.
 
 generator client {
   provider = "prisma-client-js"
@@ -15,97 +15,96 @@ datasource db {
 }
 
 enum Role {
+  member
   admin
-  customer
 }
 
-enum RewardStatus {
+enum SpaceType {
+  desk
+  meeting_room
+}
+
+enum BookingStatus {
   pending
-  completed
-  failed
-}
-
-model Business {
-  id              String     @id @default(uuid())
-  name            String
-  slug            String     @unique
-  rewardUnitValue Int
-  createdAt       DateTime   @default(now())
-  users           User[]
-  products        Product[]
-  purchases       Purchase[]
-  rewards         Reward[]
-
-  @@map("businesses")
+  approved
+  rejected
+  cancelled
 }
 
 model User {
-  id              String     @id @default(uuid())
-  businessId      String
-  business        Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  name            String
-  email           String
-  password        String
-  role            Role       @default(customer)
-  isEmailVerified Boolean    @default(false)
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-  purchases       Purchase[]
-  rewards         Reward[]
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(member)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  // Email is unique per business (not globally) so the same address can exist
-  // across tenants. Login therefore requires businessId + email.
-  @@unique([businessId, email])
-  @@index([businessId])
+  bookings      Booking[]
+  refreshTokens RefreshToken[]
+
   @@map("users")
 }
 
-model Product {
-  id          String     @id @default(uuid())
-  businessId  String
-  business    Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model Space {
+  id          String    @id @default(uuid())
   name        String
+  type        SpaceType
+  capacity    Int
   description String
-  price       Int
-  stock       Int
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  purchases   Purchase[]
+  amenities   String[]  @default([])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  @@index([businessId])
-  @@map("products")
+  bookings          Booking[]
+  maintenanceBlocks MaintenanceBlock[]
+
+  @@index([type])
+  @@index([capacity])
+  @@map("spaces")
 }
 
-model Purchase {
-  id         String   @id @default(uuid())
-  customerId String
-  customer   User     @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  businessId String
-  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  productId  String
-  product    Product  @relation(fields: [productId], references: [id])
-  amount     Int
-  createdAt  DateTime @default(now())
-  reward     Reward?
+model Booking {
+  id        String        @id @default(uuid())
+  spaceId   String
+  space     Space         @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  memberId  String
+  member    User          @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  startTime DateTime
+  endTime   DateTime
+  status    BookingStatus @default(pending)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
-  @@index([businessId])
-  @@index([customerId])
-  @@map("purchases")
+  // Indexes for the date-range / space / status / member queries.
+  @@index([spaceId, startTime, endTime])
+  @@index([memberId])
+  @@index([status])
+  @@map("bookings")
 }
 
-model Reward {
-  id         String       @id @default(uuid())
-  customerId String
-  customer   User         @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  businessId String
-  business   Business     @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  purchaseId String       @unique
-  purchase   Purchase     @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
-  points     Int
-  status     RewardStatus @default(pending)
-  createdAt  DateTime     @default(now())
+model MaintenanceBlock {
+  id        String   @id @default(uuid())
+  spaceId   String
+  space     Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  startTime DateTime
+  endTime   DateTime
+  reason    String
+  createdAt DateTime @default(now())
 
-  @@index([businessId])
-  @@index([customerId])
-  @@map("rewards")
+  @@index([spaceId, startTime, endTime])
+  @@map("maintenance_blocks")
 }

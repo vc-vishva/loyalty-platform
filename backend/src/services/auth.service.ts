@@ -5,14 +5,10 @@ import ApiError from '../utils/ApiError.js';
 import { errorMessages } from '../config/messages.js';
 
 /**
- * Login with email and password, scoped to a business.
+ * Login with email and password.
  */
-export const loginUserWithEmailAndPassword = async (
-  businessId: string,
-  email: string,
-  password: string
-): Promise<User> => {
-  const user = await userService.getUserByEmail(businessId, email);
+export const loginUserWithEmailAndPassword = async (email: string, password: string): Promise<User> => {
+  const user = await userService.getUserByEmail(email);
   if (!user || !(await userService.isPasswordMatch(password, user))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, errorMessages.INCORRECT_DETAILS);
   }

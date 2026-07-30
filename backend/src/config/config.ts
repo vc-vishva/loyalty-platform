@@ -12,9 +12,9 @@ const envVarsSchema = z.object({
   NODE_ENV: z.enum(['production', 'development', 'test']),
   PORT: z.coerce.number().int().positive().default(3000),
   DATABASE_URL: z.string().min(1, `DATABASE_URL ${validationMessages.REQUIRED}`),
-  REDIS_URL: z.string().min(1, `REDIS_URL ${validationMessages.REQUIRED}`),
   JWT_SECRET: z.string().min(1, `JWT_SECRET ${validationMessages.REQUIRED}`),
-  JWT_ACCESS_EXPIRATION_MINUTES: z.coerce.number().int().positive().default(30),
+  JWT_ACCESS_EXPIRATION_MINUTES: z.coerce.number().int().positive().default(15),
+  JWT_REFRESH_EXPIRATION_DAYS: z.coerce.number().int().positive().default(7),
 });
 
 const parsed = envVarsSchema.safeParse(process.env);
@@ -32,12 +32,10 @@ interface Config {
   database: {
     url: string;
   };
-  redis: {
-    url: string;
-  };
   jwt: {
     secret: string;
     accessExpirationMinutes: number;
+    refreshExpirationDays: number;
   };
 }
 
@@ -47,12 +45,10 @@ const config: Config = {
   database: {
     url: envVars.DATABASE_URL,
   },
-  redis: {
-    url: envVars.REDIS_URL,
-  },
   jwt: {
     secret: envVars.JWT_SECRET,
     accessExpirationMinutes: envVars.JWT_ACCESS_EXPIRATION_MINUTES,
+    refreshExpirationDays: envVars.JWT_REFRESH_EXPIRATION_DAYS,
   },
 };
 

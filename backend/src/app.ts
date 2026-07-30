@@ -11,6 +11,10 @@ import ApiError from './utils/ApiError.js';
 
 const app: Express = express();
 
+// Trust the first proxy hop so express-rate-limit sees the real client IP
+// behind a reverse proxy / container network.
+app.set('trust proxy', 1);
+
 if (config.env !== 'test') {
   app.use(morgan.successHandler);
   app.use(morgan.errorHandler);
@@ -30,6 +34,11 @@ app.use(compression());
 
 // enable cors (also handles preflight OPTIONS requests)
 app.use(cors());
+
+// health check
+app.get('/health', (_req: Request, res: Response) => {
+  res.status(httpStatus.OK).json({ status: true, message: 'ok' });
+});
 
 // v1 api routes
 app.use('/v1', routes);

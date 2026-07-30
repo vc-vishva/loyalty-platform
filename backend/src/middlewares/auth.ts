@@ -9,10 +9,9 @@ import { tokenTypes } from '../config/tokens.js';
 import { TokenPayload } from '../services/token.service.js';
 
 /**
- * Authenticate a request from its Bearer JWT. The tenant (`businessId`) and
- * `role` are taken straight from the verified token payload — never from the
- * request body or params — and attached to `req.auth`. This is the single
- * source of tenant scoping for every protected route.
+ * Authenticate a request from its Bearer JWT. The user id and role are taken
+ * straight from the verified ACCESS-token payload — never from the request body
+ * or params — and attached to `req.auth`.
  */
 export const authenticate: RequestHandler = (req: Request, _res: Response, next: NextFunction) => {
   const header = req.headers.authorization;
@@ -26,7 +25,7 @@ export const authenticate: RequestHandler = (req: Request, _res: Response, next:
     if (payload.type !== tokenTypes.ACCESS) {
       return next(new ApiError(httpStatus.UNAUTHORIZED, errorMessages.INVALID_TOKEN));
     }
-    req.auth = { userId: payload.id, businessId: payload.businessId, role: payload.role };
+    req.auth = { userId: payload.sub, role: payload.role };
     return next();
   } catch {
     return next(new ApiError(httpStatus.UNAUTHORIZED, errorMessages.USER_UNAUTHORIZED));

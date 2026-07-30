@@ -1,5 +1,4 @@
 export * as authController from './auth.controller.js';
-export * as businessController from './business.controller.js';
-export * as productController from './product.controller.js';
-export * as purchaseController from './purchase.controller.js';
-export * as rewardController from './reward.controller.js';
+export * as spaceController from './space.controller.js';
+export * as bookingController from './booking.controller.js';
+export * as maintenanceController from './maintenance.controller.js';
